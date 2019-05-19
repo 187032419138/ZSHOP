@@ -1,0 +1,87 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="users_box">
+        <div class="users_box_top">会员登录</div>
+        <div class="users_box_bottom">
+            <div class="box_bottom_left"><img src="{% static 'images/huiyuan.jpg' %}"/></div>
+            <div class="box_bottom_right">
+
+                <form method="post" action="{% url 'user:dologin' %}"  id="zc" >
+                    {% csrf_token %}
+                    <div>
+                        昵&nbsp;称：<input type="text" name="username" placeholder="请输入昵称" id="username" class="input" />
+                    </div>
+                    <div>
+                        密&nbsp;码：<input type="password" name="userpass" placeholder="请输入密码" id="password" class="input" />
+                    </div>
+                    <div>
+                        验证码：<input type="text" name="verify_code" placeholder="请输入验证码" id="verify_code_input" class="input"/>
+                        &nbsp;<img src="{% url 'user:verify_code' %}" id="verify_code"  onclick="reload_code()"/>
+                    </div>
+                    <div></div>
+                    <div>
+                        <input type="button" value="登录" class="gouwu" id="result" onclick="check_submit()"/>
+                        <a href="{% url 'user:reg' %}"><input type="button" value="注册会员" class="gouwu zhuce"/></a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+
+    </div>
+    <script>
+    function reload_code() {
+        var Time=new Date(). getTime();
+        $('#verify_code').attr('src',"{% url 'user:verify_code' %}?t="+Time)
+    }
+        function check_code() {
+            var verify_code=$('#verify_code_input').val();
+            var token=$('input[name=csrfmiddlewaretoken]').val();
+
+            if (verify_code.length != 5){
+                alert('验证码长度需为5位');
+                $('#result').attr('disable',true);
+                return false
+            }
+            var bool=false;
+            $.ajax({
+                url:'{% url 'user:check_code' %}',
+                data:{verify_code:verify_code,csrfmiddlewaretoken:token},
+                dataType:'json',
+                type:'post',
+                async:false,
+                success:function (data) {
+                    if(data.status==0){
+                        alert(data.msg);
+                        $('#result').attr('disable',true);
+                        bool=false
+                    }else {
+                        $('#result').attr('disable',false);
+                        bool=true
+                    }
+                }
+            });
+            return bool
+        }
+        function check_submit() {
+            var username=$('#username').val();
+            var password=$('#password').val();
+            var verify_code=$('#verify_code_input').val();
+
+            if(username==''){
+                alert('用户名不能为空');
+                return false
+            }
+            if(password==''){
+                alert('密码不能为空')
+                return false
+            }
+            var bool=check_code();
+            if(bool==true){
+                $('#zc').submit()
+            }
+        }
+    </script>
+{% endblock %}

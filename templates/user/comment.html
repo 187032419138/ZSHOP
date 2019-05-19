@@ -1,0 +1,56 @@
+{% extends 'common/user_base.html' %}
+{% load staticfiles %}
+{% block bobx %}
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static "js/jquery.raty.min.js" %}"></script>
+    <div class="comment_box">
+
+        <form method="post" action="{% url 'user:do_comment' %}" class="form-horizontal" role="form">
+            {% csrf_token %}
+
+            {% for order_info in order_info_list %}
+                <div class="form-group">
+                    <label for="firstname" class="col-sm-2 control-label">商品名称</label>
+                    <div class="col-sm-7">
+                        {{ order_info.goods.goods_name }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="firstname" class="col-sm-2 control-label">评分</label>
+                    <div class="col-sm-7">
+                        <div id="star{{ order_info.goods_id }}"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="firstname" class="col-sm-2 control-label">评价内容</label>
+                    <div class="col-sm-7">
+                        <textarea class="form-control" rows="5"
+                                  name="comment_content{{ order_info.goods_id }}"></textarea>
+                    </div>
+                </div>
+                </br>
+                <script>
+                    $('#star' +{{ order_info.goods_id }}).raty({
+                        path: '/static/images/',
+                        scoreName: "score{{ order_info.goods_id }}",
+                    });
+                </script>
+                <input type="hidden" name="goods_id" value="{{ order_info.goods_id }}">
+                <input type="hidden" name="order_id" value="{{ order_info.order_id }}">
+            {% endfor %}
+
+            </br>
+            </br>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label"></label>
+                <div class="col-sm-5">
+                    <input type="submit" class="btn btn-success" value="评价商品"/>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+
+{% endblock %}

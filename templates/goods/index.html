@@ -1,0 +1,25 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% block content %}
+    <div id="banner">
+    </div>
+    <div class="shop_list">
+        <div class="shop_box">
+            <div class="shop_box_bottom clearfix">
+                {% for goods in list %}
+                    <div class="box_list">
+                        <dl>
+                            <dt><a href="{% url 'goods:details' %}?gid={{ goods.id }}"><img
+                                    src="{% static goods.goods_pic %}"/></a></dt>
+                            <dd>
+                                <p style="font-size: 20px"><a href="{% url 'goods:details' %}?gid={{ goods.id }}">{{ goods.goods_name }}</a></p>
+                                <p style="font-size: 25px;color:#c9302c " >￥{{ goods.goods_xprice }}元</p>
+                            </dd>
+                        </dl>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}

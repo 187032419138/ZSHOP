@@ -1,0 +1,40 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% block content %}
+    <div id="banner2">
+    </div>
+    <div class="shop_list">
+        <div class="shop_box">
+            <div class="shop_box_bottom clearfix">
+                <div class="box_list">
+                        <dl>
+                            <dt><a href="{% url 'goods:details' %}?gid={{ this_goods.id }}"><img
+                                    src="{% static this_goods.goods_pic %}"/></a></dt>
+                            <dd>
+                                <p style="font-size: 12px"><a href="{% url 'goods:details' %}?gid={{ this_goods.id }}">{{ this_goods.goods_name }}</a></p>
+                                <p style="color: red">￥{{ this_goods.goods_xprice }}元</p>
+                                <p style="font-size: 12px">有<span style="color: red">{{ comment_num }}</span>人评论</p>
+                                <p style="color: red">本站</p>
+                            </dd>
+                        </dl>
+                    </div>
+                {% for goods in other_goods_list %}
+
+                    <div class="box_list">
+                        <dl>
+                            <dt><a href="{{ goods.link }}">
+                                <img src="{{ goods.img }}"/></a></dt>
+                            <dd>
+                                <p style="font-size: 12px"><a href="{{ goods.link }}">{{ goods.title }}</a></p>
+                                <p style="color: red">￥{{ goods.price }}元</p>
+                                <p style="font-size: 12px">有<span style="color: red">{{ goods.comment }}</span>人评论</p>
+                                <p style="color: red">{{ goods.saler }}</p>
+                            </dd>
+                        </dl>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}

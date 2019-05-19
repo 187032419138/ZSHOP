@@ -1,0 +1,92 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="goods_type">
+        <div class="goods_details"><a href="{% url 'goods:index' %} }}" style="color: #000;">首页</a>
+            >{{ goods.goods_name }}</div>
+        <div class="goods_box">
+            <div class="box_pic"><img src="{% static goods.goods_pic %}"/></div>
+            <div class="box_details">
+                <form method="post" action="{% url 'user:add_car' %}">
+                    {% csrf_token %}
+                    <h2>{{ goods.goods_name }}</h2>
+                    <span>{{ goods.goods_infro }}</span>
+                    <div class="box_bg">价格：￥<span
+                            style="font-size: 30px; font-weight: bold; font-family:'微软雅黑';color:#FD482C ">{{ goods.goods_xprice }}</span>元&nbsp;&nbsp;<s>{{ goods.goods_oprice }}</s>
+                    </div>
+                    <div class="address">配送地：{{ goods.goods_address }}</div>
+                    <div class="address">商品编号：{{ goods.goods_num }}</div>
+                    <div class="num">数量：
+                        <input type="button" name="-" value="-" class="btn1" onclick="num('reduce')"/>
+                        <input type="text" value="1" id="count" name="count" class="text1"/>
+                        <input type="button" name="+" value="+" class="btn1" onclick="num('jia')"/></div>
+
+                    <div class="btn2"><input type="submit" value="加入购物车" class="gouwu"/></div>
+
+                    <input type="hidden" name="goods_id" value="{{ goods.id }}">
+                </form>
+                <form method="get" action="{% url 'goods:bijia' %}">
+                    <div class="btn2">
+                        <input type="submit" value="去比价" class="gouwu"/>
+                        <input type="hidden" name="key" value="{{ goods.goods_name }}">
+                        <input type="hidden" name="gid" value="{{ goods.id }}">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="goods_type1">
+        <div class="type1_left">
+            <div class="type1_top">其他商品</div>
+            <div class="type1_bottom">
+                {% for other_goods in other_goods_list %}
+                    <dl>
+                        <dt><a href="#"><img src="{% static other_goods.goods_pic %}"/> </a></dt>
+                        <dd>
+                            <span class="pname">
+                                <a href="#">{{ other_goods.goods_name }}</a>
+                            </span>
+                            <p class="price">￥{{ other_goods.goods_oprice }}</p>
+                        </dd>
+                    </dl>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="type1_right">
+            <div class="type1_top">商品详情</div>
+            {% autoescape off %}
+                <div class="type1_bottom">{{ goods.goods_content }}</div>
+            {% endautoescape %}
+            <div class="type1_top">商品评价</div>
+                <div style="font-size: 12px">
+
+                {% for com in comments %}
+                    <div class="type1_bottom" style="color:#999999 ">用户：{{ com.users.username }} 评分：{{ com.score }}<span style="color: yellow">★</span></div>
+                    <div class="type1_bottom" >{{ com.content }}</div>
+                    <div class="type1_bottom" style="color:#999999 ">{{ com.add_time}}</div>
+                    <hr>
+
+                {% endfor %}
+                ...
+                </div>
+        </div>
+    </div>
+
+    <script>
+        // 加减数量
+        function num(type) {
+            var number = Number($('#count').val());
+            if (type == 'reduce') { //减去
+                if (number >= 1) {
+                    number = number - 1;
+                }
+            } else {
+                number = number + 1;
+            }
+            $('#count').val(number) // 把计算后的值 重新赋给count文本框
+        }
+    </script>
+
+
+{% endblock %}

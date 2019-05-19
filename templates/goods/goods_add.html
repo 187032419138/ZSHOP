@@ -1,0 +1,113 @@
+{% extends 'common/base_manager.html' %}
+{% block content %}
+    {% load static %}
+    <script src="{% static 'kindeditor/kindeditor-all-min.js' %}"></script>
+    <script src="{% static 'kindeditor/lang/zh-CN.js' %}"></script>
+     <div class="x-body layui-anim layui-anim-up">
+        <form class="layui-form" method="post" action="{% url 'goods:dogoods_add' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+          <div class="layui-form-item">
+              <label for="L_email" class="layui-form-label">
+                  <span class="x-red">*</span>商品编号
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_email" name="goods_num" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="L_username" class="layui-form-label">
+                  <span class="x-red">*</span>商品名称
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_username" name="goods_name" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label for="L_username" class="layui-form-label">
+                  <span class="x-red">*</span>商品类别
+              </label>
+              <div class="layui-input-inline">
+                    <select name="type_id">
+                        {% for goods_type in goods_type_list %}
+                        <option value="{{ goods_type.type_id}}">{{ goods_type.type_name }}</option>
+                        {% endfor %}
+                    </select>
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label for="L_pass" class="layui-form-label">
+                  <span class="x-red">*</span>商品原价
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_pass" name="goods_oprice" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+                  <span class="x-red">*</span>商品现价
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_repass" name="goods_xprice" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		  <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+                  <span class="x-red">*</span>商品库存
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_repass" name="goods_count" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		  <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+                  <span class="x-red">*</span>商品缩略图
+              </label>
+              <div class="layui-input-inline">
+                  <input type="file" id="L_repass" name="goods_pic" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		  <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+                  <span class="x-red">*</span>配送地址
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_repass" name="goods_address" required=""
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+		  <div class="layui-form-item layui-form-text">
+                    <label for="desc" class="layui-form-label">
+                        商品内容
+                    </label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入内容" id="desc" name="goods_content" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+          <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+              </label>
+              <button  class="layui-btn" lay-filter="add" lay-submit="">
+                  增加
+              </button>
+
+          </div>
+      </form>
+    </div>
+    <script>
+        KindEditor.ready(function (K) {
+            window.editor = K.create('#desc',{
+                width:'800px',
+                height:'500px',
+                uploadJson:'/admin/uploads/kindeditor/'
+            })
+        })
+    </script>
+{% endblock %}

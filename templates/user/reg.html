@@ -1,0 +1,63 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="users_box">
+        <div class="users_box_top">会员注册</div>
+        <div class="users_box_bottom">
+            <div class="box_bottom_left"><img src="{% static 'images/huiyuan.jpg' %}"/></div>
+            <div class="box_bottom_right">
+
+                <form method="post" action="{% url 'user:doreg' %}">
+                    {% csrf_token %}
+                    <div>
+                        昵&nbsp;&nbsp;称：<input type="text" id="username" name="username" placeholder="请输入昵称"
+                                              class="input" onblur="check_user()"/>
+                    </div>
+                    <div>
+                        邮箱地址：<input type="text" id="email" name="email" placeholder="请输入邮箱"
+                                              class="input" />
+                    </div>
+                    <div>
+                        密&nbsp;&nbsp;码：<input type="password" name="userpass" placeholder="请输入密码" class="input"/>
+                    </div>
+                    <div>
+                        确认密码：<input type="password" name="userpass1" placeholder="请输入确认密码" class="input"/>
+                    </div>
+
+                    <div>
+                        {#                        <input type="submit" value="登录" class="gouwu"/>#}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="注册会员" id="sub" class="gouwu zhuce"/>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 验证用户名是否存在
+        function check_user() {
+            var name = $('#username').val() // 获取用户输入的用户名
+            $.ajax({
+                url: '{% url 'user:check_user' %}',  // 访问的连接（地址）
+                data: {username: name}, // json {key:name}
+                type: 'get', //数据提交的方式
+                dataType: 'text', //  text html json
+                success: function (data, status, xhr) { // 成功之后的执行的回调函数
+                    if (data == 1) {
+                        alert('用户名已存在')
+
+                        $('#sub').attr('disabled', true)
+                    } else {
+                        $('#sub').attr('disabled', false)
+                    }
+                    console.log('执行回调')
+                }
+            });
+            console.log('执行到这了')
+        }
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="goods_type">
+        <div class="type_list">
+            {% for type in type_list %}
+                <a href="{% url 'goods:type' %}?tid={{ type.type_id }}" style="color: #252525;padding-right: 50px">{{ type.type_name }}</a>
+            {% endfor %}
+        </div>
+        <div class="type_list_box">
+            {% for goods in list %}
+                <div class="box_list">
+                    <dl>
+                        <dt><a href="{% url 'goods:details' %}?gid={{ goods.id }}"><img
+                                src="{% static goods.goods_pic %}"/></a></dt>
+                        <dd>
+                            <p style="font-size: 20px">{{ goods.goods_name }}</p>
+                            <p style="color: #c9302c;font-size: 25px">￥{{ goods.goods_xprice }}元</p>
+                        </dd>
+                    </dl>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

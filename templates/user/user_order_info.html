@@ -1,0 +1,47 @@
+{% extends 'common/user_base.html' %}
+{% load static %}
+{% block bobx %}
+    <div class="xq">
+        <div class="location"><a href="{% url 'user:user_order_list' %}">我的订单</a> > 查看订单</div>
+        <div class="shouhuo" style="height: 400px">
+            <div class="shouhuo_top">订单信息</div>
+            <div class="shouhuo_bottom">
+                <p>单号：{{ info.order_code }}</p>
+                <p>金额：{{ info.money }}</p>
+                <p>下单时间：{{ info.add_time|date:'Y-m-d H:i:s' }}</p>
+                <p>支付状态：
+                    {% if info.pay_status == 1 %}
+                        已支付
+                    {% else %}
+                        未支付
+                    {% endif %}
+                </p>
+                <p>发货状态：
+                    {% if info.send_status == 1 %}
+                        已发货
+                    {% else %}
+                        未发货
+                    {% endif %}
+                </p>
+                <p>收货状态：
+                    {% if info.pay_status == 1 %}
+                        已收货
+                    {% else %}
+                        未收货
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div style="height: 2px"></div>
+
+        <div class="shouhuo" style="height: 300px">
+            <div class="shouhuo_top">收货信息</div>
+            <div class="shouhuo_bottom">
+                <p>收货人：{{ info.contacts }}</p>
+                <p>联系电话：{{ info.phone }}</p>
+                <p>收货地址：{{ info.address }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

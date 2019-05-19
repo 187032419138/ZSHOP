@@ -1,0 +1,182 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="cart_list">
+        <form method="post">
+            {% csrf_token %}
+            <div class="cart_top">我的购物车</div>
+            <div class="cart_listbox">
+                <table id="car_table" width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th>商品名称</th>
+                        <th>商品缩略图</th>
+                        <th>商品单价</th>
+                        <th>商品数量</th>
+                        <th>商品小计</th>
+                        <th>操作</th>
+                    </tr>
+
+
+                    {% for car in car_list %}
+
+                        <tr id="tr_{{ car.goods_id }}" {{ car.num }}>
+                            <td><a href="#">{{ car.goods.goods_name }}</a></td>
+                            <td><a href="#"><img src="{% static car.goods.goods_pic %}"/></a></td>
+                            <td>￥{{ car.goods.goods_xprice }}元</td>
+                            <input type="hidden" id="xprice_{{ car.goods_id }}" value="{{ car.goods.goods_xprice }}"/>
+                            <td><input type="button" name="-" value="-" class="btn1"
+                                       onclick="num('reduce',{{ car.goods.id }})"/>
+                                <input type="text" value="{{ car.number }}" id="number_{{ car.goods_id }}" name="count"
+                                       class="text1"/>
+                                <input type="button" name="+" value="+" class="btn1"
+                                       onclick="num('jia',{{ car.goods.id }})"/>
+                            </td>
+                            <td>￥ <span
+                                    id="xj_{{ car.goods_id }}"> {% widthratio car.goods.goods_xprice 1 car.number %}</span>
+                            </td>
+                            {# widthratio 计算过程 (第一个参数/第二个参数）* 第三个参数 #}
+                            <td><a href="javascript:" onclick="del_car({{ car.goods_id }})">删除</a></td>
+                            <input type="hidden" name="goods_id" id="goods_id_{{ car.goods_id }}"
+                                   value="{{ car.goods.id }}">
+                        </tr>
+                    {% empty %}
+                        <tr id="empty">
+                            <td colspan="6" style="text-align: center;">购物车空空如也~~，请快去购物吧！</td>
+                        </tr>
+                    {% endfor %}
+
+
+                </table>
+                <div class="goon">
+                    <div class="clearcart">
+                        <input type="button" value="清空购物车" class="btn" id="clear_car_but" onclick="clear_car()"/>
+                    </div>
+                    <div class="totalprice">
+                        总计：￥ <span id="totalprice">0</span>元
+                    </div>
+                </div>
+
+                <div class="jxgg">
+                    <a href="{% url 'goods:index' %}">继续逛逛</a>
+                </div>
+                <div class="order">
+                    <a href="{% url 'user:place_order' %}"><input type="button" id="sub_order" value="立即下单"
+                                                                  class="btn"/></a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function num(type, gid) {
+            var goods_id = $('#goods_id_' + gid).val();
+            var number = $('#number_' + gid).val();
+            var price = $('#xprice_' + gid).val();
+            var token = $('input[name=csrfmiddlewaretoken]').val();
+            $.ajax({
+                url: '{% url 'user:edit_num' %}',
+                data: {goods_id: goods_id, number: number, type: type, csrfmiddlewaretoken: token}, // json
+                type: 'post',
+                dataType: 'json',
+                success: function (abc, status, xhr) {
+                    console.log(abc);
+                    {#alert(abc)#}
+                    if (abc.status == 0) {
+                        alert(abc.msg)
+                    } else {
+                        $('#number_' + gid).val(abc.number)
+                        {# 重新计算小计 #}
+                        $('#xj_' + gid).html(abc.number * price)
+                        js_total() // 计算总计
+                    }
+                }
+            })
+        }
+
+        // 删除购物车
+        function del_car(gid) {
+            var token = $('input[name=csrfmiddlewaretoken]').val()
+            $.ajax({
+                url: '{% url 'user:del_car' %}',
+                data: {goods_id: gid, csrfmiddlewaretoken: token}, // json
+                type: 'post',
+                dataType: 'json',
+                success: function (data, status, xhr) {
+                    console.log(data)
+                    if (data.status == 2) {
+                        alert(data.msg)
+                        window.location.href = data.data
+                    } else if (data.status == 0) {
+                        alert(data.msg)
+                    } else {
+                        $('#tr_' + gid).remove()
+                        js_total() // 计算总计
+                        if ($('span[id*=xj_]').length == 0) {
+                            $('#car_table').append('<tr id="empty" ><td colspan="6" style="text-align: center;">购物车空空如也~~，请快去购物吧！</td></tr>')
+                        }
+                        disabled_but() // 禁用清空购物车 按钮
+                    }
+                }
+            })
+        }
+
+        // 清空购物车
+        function clear_car() {
+            var token = $('input[name=csrfmiddlewaretoken]').val()
+            $.ajax({
+                url: '{% url 'user:clear_car' %}',
+                data: {csrfmiddlewaretoken: token}, // json
+                type: 'post',
+                dataType: 'json',
+                success: function (data, status, xhr) {
+                    console.log(data);
+                    if (data.status == 2) {
+                        alert(data.msg);
+                        window.location.href = data.data
+                    } else if (data.status == 0) {
+                        alert(data.msg)
+                    } else {
+                        $('tr[id*=tr_]').each(function (obj, ev) {
+                            $(this).remove()
+                        });
+                        if ($('#empty').length == 0) {
+                            $('#car_table').append('<tr id="empty" ><td colspan="6" style="text-align: center;">购物车空空如也~~，请快去购物吧！</td></tr>')
+                        }
+                        js_total() // 计算小计
+                        disabled_but() // 禁用清空购物车 按钮
+                    }
+                }
+            })
+        }
+
+        // 页面加载完成 计算购物车总计 如果购物车没有商品禁用清空按钮
+        $(function () {
+            js_total()
+            disabled_but()
+        })
+
+        // 计算总计的方法
+        function js_total() {
+            // 获取所有的小计
+            var total = 0
+            $('span[id*=xj_]').each(function (obj, ev) {
+                var xj = $(this).html()
+                total += Number(xj)
+            });
+            $('#totalprice').html(total)
+        }
+
+        // 判断是否需要禁用 清空按钮
+        function disabled_but() {
+            if ($('tr[id*=tr_]').length == 0) { // 禁用按钮
+                $('#clear_car_but').attr('disabled', true)
+                $('#sub_order').attr('disabled', true)
+            } else { // 启用按钮
+                $('#clear_car_but').attr('disabled', false)
+                $('#sub_order').attr('disabled', false)
+            }
+        }
+
+    </script>
+
+{% endblock %}
